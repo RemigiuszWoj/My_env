@@ -1,65 +1,52 @@
-# Base
-FROM ubuntu:latest as compilesys
+# Base image
+FROM ubuntu:20.04
 
-# Initial config
+# base konfiguration
 LABEL maintainer="remigiusz.wojewodzki@gmail.com"
 LABEL name="me_env"
-USER root
 
-# # Install dependencies, Pyenv, and configure
-# RUN apt-get update && apt-get install -y python3 python3-pip git curl make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev
-# RUN curl https://pyenv.run | bash
-# RUN echo 'export PYENV_ROOT="/root/.pyenv"' >> ~/.bashrc
-# RUN echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-# RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
-# RUN /bin/bash -c "source ~/.bashrc"
 
-# # Install Python and create virtual environment
-# RUN /bin/bash -c "source ~/.bashrc && apt-get upgrade && pyenv install 3.12.0 && pyenv virtualenv 3.12.0 my-env"
 
-# # Set up the workspace
-# VOLUME ["/home/data", "/home/apps"]
-# CMD ["bash", "-c", "source ~/.bashrc && pyenv init - && /bin/bash"]
-# WORKDIR /home/work
+# Pyenv adons
+RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    make \
+    build-essential \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    wget \
+    ca-certificates \
+    curl \
+    llvm \
+    libncurses5-dev \
+    xz-utils \
+    tk-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libffi-dev \
+    liblzma-dev \
+    mecab-ipadic-utf8 \
+    git \
+    libncursesw5-dev
 
-# ENV PYTHON_VERSION 2.7.10
+# Env chane for PyEnv
+ENV DEBIAN_FRONTEND=noninteractive  
+ENV PYENV_ROOT /root/.pyenv
+ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
 
-WORKDIR /
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        make \
-        build-essential \
-        libssl-dev \
-        zlib1g-dev \
-        libbz2-dev \
-        libreadline-dev \
-        libsqlite3-dev \
-        wget \
-        curl \
-        llvm \
-        libncurses5-dev \
-        libncursesw5-dev \
-        xz-utils \
-        tk-dev \
-        libffi-dev \
-        liblzma-dev \
-        git 
+#Pythone version
+ENV PYTHON_VERSION 3.7.10
 
-RUN git clone https://github.com/pyenv/pyenv.git /pyenv
-ENV PYENV_ROOT /pyenv
-RUN /pyenv/bin/pyenv install 3.10.10
-RUN eval "$(/pyenv/bin/pyenv init -)" && /pyenv/bin/pyenv local 3.10.10 && pip install numpy poetry setuptools wheel six auditwheel
+# Install pyenv
+RUN set -ex && \
+    curl https://pyenv.run | DEBIAN_FRONTEND=noninteractive bash && \
+    pyenv update && \
+    pyenv install $PYTHON_VERSION && \
+    pyenv global $PYTHON_VERSION && \
+    pyenv rehash
 
-# WORKDIR /
-# COPY .git myproject.git
-# RUN git clone myproject.git
-# WORKDIR /myproject
-
-RUN mkdir -p .venv
-RUN eval "$(/pyenv/bin/pyenv init -)" && /pyenv/bin/pyenv local 3.10.10
-
-FROM ubuntu:latest as targetsys
-RUN useradd -m -u 1000 -U remigiusz
-USER remigiusz
-
-COPY --from=compilesys /pyenv /pyenv
+# To do do 
+# podmontowanie data i apps  nazwa hosta zalezna od zmiennej  dodanie sieci  docker compouse
