@@ -5,8 +5,6 @@ FROM ubuntu:20.04
 LABEL maintainer="remigiusz.wojewodzki@gmail.com"
 LABEL name="me_env"
 
-
-
 # Pyenv adons
 RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -48,5 +46,33 @@ RUN set -ex && \
     pyenv global $PYTHON_VERSION && \
     pyenv rehash
 
+# Create workdir
+RUN mkdir /workdir
+WORKDIR /workdir
+
+# ADD data and apps folders
+ADD ./data /workdir/data
+ADD ./apps /workdir/apps
+
+# Add hostname
+ENV HOSTNAME dev_env
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    net-tools \
+    vim
+
+# #  Set statik ip
+# RUN mkdir /etc/network
+# RUN touch /etc/network/interfaces
+# RUN echo "auto eth0" >> /etc/network/interfaces
+# RUN echo "iface eth0 inet static" >> /etc/network/interfaces
+# RUN echo "address 192.168.1.10" >> /etc/network/interfaces
+# RUN echo "netmask 255.255.255.0" >> /etc/network/interfaces
+# RUN echo "gateway 192.168.1.1" >> /etc/network/interfaces
+
+# RUN ifdown eth0
+# RUN ifup eth0
+
 # To do do 
-# podmontowanie data i apps  nazwa hosta zalezna od zmiennej  dodanie sieci  docker compouse
+# dodanie sieci  docker compouse montowanie volumenow
