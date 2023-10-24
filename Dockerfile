@@ -62,6 +62,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
     net-tools \
     vim
 
+# Create hostname dir
+RUN mkdir ${HOSTNAME}
+# Run sample apps
+RUN ./apps/script.py
+
 # #  Set statik ip
 # RUN mkdir /etc/network
 # RUN touch /etc/network/interfaces
@@ -73,6 +78,3 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
 
 # RUN ifdown eth0
 # RUN ifup eth0
-
-# To do do 
-# dodanie sieci  docker compouse montowanie volumenow
