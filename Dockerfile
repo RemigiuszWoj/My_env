@@ -26,17 +26,22 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
     libxmlsec1-dev \
     libffi-dev \
     liblzma-dev \
-    mecab-ipadic-utf8 \
+    # mecab-ipadic-utf8 \
     git \
-    libncursesw5-dev
+    libncursesw5-dev \
+    net-tools \
+    vim && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    rm -rf /etc/apt/sources.list.d/* /etc/apt/sources.list /etc/apt/preferences /var/cache/apt/archives/*.deb
 
 # Env chane for PyEnv
 ENV DEBIAN_FRONTEND=noninteractive  
 ENV PYENV_ROOT /root/.pyenv
 ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
-
 #Pythone version
 ENV PYTHON_VERSION 3.7.10
+ENV HOSTNAME dev_env
 
 # Install pyenv
 RUN set -ex && \
@@ -51,16 +56,15 @@ RUN mkdir /workdir
 WORKDIR /workdir
 
 # ADD data and apps folders
-ADD ./data /workdir/data
-ADD ./apps /workdir/apps
+COPY ./data /workdir/data
+COPY ./apps /workdir/apps
 
 # Add hostname
-ENV HOSTNAME dev_env
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    net-tools \
-    vim
+# RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
+#     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+#     net-tools \
+#     vim
 
 # Create hostname dir
 RUN mkdir ${HOSTNAME}
