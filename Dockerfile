@@ -71,6 +71,7 @@ RUN mkdir ${HOSTNAME}
 # Run sample apps
 RUN ./apps/script.py
 
+
 # #  Set statik ip
 # RUN mkdir /etc/network
 # RUN touch /etc/network/interfaces
