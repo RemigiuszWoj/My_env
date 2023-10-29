@@ -26,7 +26,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
     libxmlsec1-dev \
     libffi-dev \
     liblzma-dev \
-    # mecab-ipadic-utf8 \
     git \
     libncursesw5-dev \
     net-tools \
@@ -51,9 +50,13 @@ RUN set -ex && \
     pyenv global $PYTHON_VERSION && \
     pyenv rehash
 
+RUN pip install --upgrade pip
 # Create workdir
 RUN mkdir /workdir
 WORKDIR /workdir
+
+EXPOSE 8080
+EXPOSE 22
 
 # ADD data and apps folders
 COPY ./data /workdir/data
@@ -61,25 +64,7 @@ COPY ./apps /workdir/apps
 
 # Add hostname
 
-# RUN DEBIAN_FRONTEND=noninteractive apt-get update -y && \
-#     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-#     net-tools \
-#     vim
-
 # Create hostname dir
 RUN mkdir ${HOSTNAME}
 # Run sample apps
 RUN ./apps/script.py
-
-
-# #  Set statik ip
-# RUN mkdir /etc/network
-# RUN touch /etc/network/interfaces
-# RUN echo "auto eth0" >> /etc/network/interfaces
-# RUN echo "iface eth0 inet static" >> /etc/network/interfaces
-# RUN echo "address 192.168.1.10" >> /etc/network/interfaces
-# RUN echo "netmask 255.255.255.0" >> /etc/network/interfaces
-# RUN echo "gateway 192.168.1.1" >> /etc/network/interfaces
-
-# RUN ifdown eth0
-# RUN ifup eth0

@@ -5,12 +5,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
     image: my_env:latest
     container_name: env1
     command: ["/bin/bash", "-c", "tail -f /dev/null"]
     tty: true
     stdin_open: true
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.100.4
+    ports:
+      - "8080:8080"
+      - "22:22"
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -18,3 +23,11 @@ services:
       - "9090:9090"
     volumes:
       - ./tmp/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+
+networks:
+  mynetwork:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.100.0/24
+          gateway: 192.168.100.1
